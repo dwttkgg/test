@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+               http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+               http://www.springframework.org/schema/context
+               http://www.springframework.org/schema/context/spring-context-4.0.xsd
+               http://www.springframework.org/schema/tx
+               http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+               http://www.springframework.org/schema/aop
+               http://www.springframework.org/schema/aop/spring-aop-4.0.xsd">
+		<!-- 
+			设置一个bean,name为需唯一，
+			class中必须为可以实例化的类，
+			不可以是接口或者抽象类
+					
+		 -->
+		
+		<bean name="userDao" class="daoImpl.DaoImpl"></bean>
+		
+		<!-- 设置切面类的bean -->
+		<bean name="transactionApsect" class="action.TransactionApsect"></bean>
+		
+		<!-- 进行AOP配置 -->
+		<aop:config>
+			<!-- 配置切入点
+				id:切入点的id，需要唯一
+				expression:设置切入点的表达式
+				(就是设置哪些包下的那些类中的哪些方法) -->
+				<aop:pointcut id="mycut" expression="execution(* daoImpl.*.*(..))"></aop:pointcut>
+				<aop:aspect ref="transactionApsect" >
+					<aop:before method="begin" pointcut-ref="mycut"></aop:before>
+					<aop:after method="close" pointcut-ref="mycut"></aop:after>
+				</aop:aspect>
+		</aop:config>
+</beans>
